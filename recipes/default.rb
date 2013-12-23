@@ -72,7 +72,7 @@ file "/etc/varnish/secret" do
   owner "root"
   group "root"
   mode "0600"
-  content node[:varnish][:secret]
+  content "#{node[:varnish][:secret]}\n"
 end
 
 storage_spec = node[:varnish][:storage_spec]
