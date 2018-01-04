@@ -1,9 +1,12 @@
-# 
-# 
+#
+#
 [varnish]
-name="Varnish Repo for Redhat/Centos."
-type=rpm-md
-baseurl=http://repo.varnish-cache.org/redhat/<%= @version %>/<%= @el_version %>/
+name="Varnish Repo for Redhat/Centos"
+baseurl=https://packagecloud.io/varnishcache/<%= @version %>/el/<%= @el_version %>/$basearch
+repo_gpgcheck=1
 gpgcheck=0
-gpgkey=
 enabled=1
+gpgkey=https://packagecloud.io/varnishcache/<%= @version %>/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300

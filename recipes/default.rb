@@ -20,31 +20,38 @@
 #
 
 if ["centos","redhat"].include?(node[:platform])
-  
+
   d = directory "/var/cache/chef"
   d.run_action(:create)
-  
+
   a = template "/etc/yum.repos.d/varnish.repo" do
         cookbook "varnish"
-        source "varnish.repo.erb" 
+        source "varnish.repo.erb"
         owner "root"
         group "root"
         mode "0644"
-        variables (:version => "varnish-#{node[:varnish][:version]}",
-                   :el_version => "el#{node[:platform_version].split(".").first}" )
+        variables (:version => "varnish#{node[:varnish][:version].gsub("\.","")}",
+                   :el_version => "#{node[:platform_version].split(".").first}" )
         action :nothing
       end
-  b = yum_package "varnish" do
+  b = bash 'update yum cache' do
+        code "yum -q makecache -y --disablerepo='*' --enablerepo='varnish'"
+      end
+  c = yum_package "varnish" do
         flush_cache[:before]
         action :nothing
-      end  
+      end
   a.run_action(:create)
-  b.run_action(:install)
+  b.run_action(:run)
+  c.run_action(:install)
 
 elsif ["debian", "ubuntu"].include?(node[:platform])
 
-  a = cookbook_file "/etc/apt/trusted.gpg.d/Varnish.gpg" do
-    mode "0644"
+  a = remote_file '/etc/apt/trusted.gpg.d/Varnish.gpg' do
+    source "https://packagecloud.io/varnishcache/varnish#{node[:varnish][:version].gsub("\.","")}/gpgkey"
+    owner 'root'
+    group 'root'
+    mode '0644'
   end
 
   b = template "/etc/apt/sources.list.d/varnish-cache.list" do
