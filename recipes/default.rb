@@ -35,7 +35,7 @@ if ["centos","redhat"].include?(node[:platform])
         action :nothing
       end
   b = bash 'update yum cache' do
-        code "sudo yum -q makecache -y --disablerepo='*' --enablerepo='varnish'"
+        code "yum -q makecache -y --disablerepo='*' --enablerepo='varnish'"
       end
   c = yum_package "varnish" do
         flush_cache[:before]
