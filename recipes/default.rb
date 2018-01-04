@@ -34,12 +34,16 @@ if ["centos","redhat"].include?(node[:platform])
                    :el_version => "#{node[:platform_version].split(".").first}" )
         action :nothing
       end
-  b = yum_package "varnish" do
+  b = bash 'update yum cache' do
+        code "sudo yum -q makecache -y --disablerepo='*' --enablerepo='varnish'"
+      end
+  c = yum_package "varnish" do
         flush_cache[:before]
         action :nothing
       end
   a.run_action(:create)
-  b.run_action(:install)
+  b.run_action(:run)
+  c.run_action(:install)
 
 elsif ["debian", "ubuntu"].include?(node[:platform])
 
